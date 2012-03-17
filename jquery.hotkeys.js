@@ -30,8 +30,23 @@
 			"`": "~", "1": "!", "2": "@", "3": "#", "4": "$", "5": "%", "6": "^", "7": "&",
 			"8": "*", "9": "(", "0": ")", "-": "_", "=": "+", ";": ": ", "'": "\"", ",": "<",
 			".": ">",  "/": "?",  "\\": "|"
-		}
+		},
+
+		// based on: http://www.w3.org/TR/html5/the-input-element.html#attr-input-type
+		ignoreBubbling : [
+			"text", "search", "tel", "url", "email", "password", "datetime",
+			"date", "month", "week", "time", "datetime-local", "number",
+			"range", "color"
+		]
 	};
+
+	function shouldIgnore( el, event ) {
+		// Don't fire in text-accepting inputs that we didn't directly bind to
+		// important to note that $.fn.prop() is only available after jQuery 1.6
+		return el !== event.target && (/textarea|select/i.test( event.target.nodeName ) ||
+				jQuery.inArray(event.target.type, jQuery.hotkeys.ignoreBubbling) !== -1 ||
+				$(event.target).prop('contenteditable') == 'true' );
+	}
 
 	function keyHandler( handleObj ) {
 
